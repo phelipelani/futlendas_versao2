@@ -1,0 +1,24 @@
+/jogadores/{id}:
+  get:
+    summary: Buscar jogador por ID
+    tags:
+    - Jogadores
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Jogador
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jogador'
+      '404':
+        description: Não encontrado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'

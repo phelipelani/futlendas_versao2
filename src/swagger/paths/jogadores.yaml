@@ -1,0 +1,33 @@
+/jogadores:
+  get:
+    summary: Listar todos os jogadores
+    tags:
+    - Jogadores
+    responses:
+      '200':
+        description: Lista de jogadores
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Jogador'
+  post:
+    summary: Criar novo jogador (Admin)
+    tags:
+    - Jogadores
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Jogador'
+    responses:
+      '201':
+        description: Jogador criado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jogador'
+    security:
+    - bearerAuth: []

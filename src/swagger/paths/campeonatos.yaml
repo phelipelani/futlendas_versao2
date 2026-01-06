@@ -1,0 +1,29 @@
+/campeonatos:
+  get:
+    summary: Listar campeonatos
+    tags:
+    - Campeonatos
+    responses:
+      '200':
+        description: Lista de campeonatos
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Campeonato'
+  post:
+    summary: Criar campeonato (Admin)
+    tags:
+    - Campeonatos
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Campeonato'
+    responses:
+      '201':
+        description: Campeonato criado
+    security:
+    - bearerAuth: []

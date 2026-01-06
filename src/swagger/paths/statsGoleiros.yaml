@@ -1,0 +1,46 @@
+# Arquivo: src/swagger/paths/statsGoleiros.yaml
+tags:
+  - name: Estatísticas (Goleiros)
+    description: Rotas públicas para estatísticas específicas de goleiros
+
+paths:
+  /goleiro-stats/liga:
+    get:
+      tags: [Estatísticas (Goleiros), Ligas]
+      summary: Ranking de goleiros por liga
+      security: []
+      parameters:
+        - in: query
+          name: liga_id
+          required: true
+          schema:
+            type: integer
+          description: ID da liga para filtrar estatísticas.
+      responses:
+        '200':
+          description: OK - Ranking de goleiros da liga
+          # (Definir schema de retorno)
+        '400':
+          description: 'Query param liga_id é obrigatório'
+
+  /goleiro-stats/campeonato/{campeonato_id}:
+    get:
+      tags: [Estatísticas (Goleiros), Campeonatos]
+      summary: Ranking de goleiros por campeonato
+      security: []
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          description: ID do campeonato
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: OK - Ranking de goleiros do campeonato
+          # (Definir schema de retorno)
+        '400':
+          description: ID do campeonato inválido
+        '404':
+          description: Campeonato não encontrado

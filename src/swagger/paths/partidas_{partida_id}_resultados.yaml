@@ -1,0 +1,22 @@
+/partidas/{partida_id}/resultados:
+  put:
+    summary: Finalizar partida e salvar resultados (Admin)
+    tags:
+    - Partidas
+    parameters:
+    - name: partida_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+    responses:
+      '200':
+        description: Resultados salvos
+    security:
+    - bearerAuth: []

@@ -1,0 +1,81 @@
+# Arquivo: src/swagger/paths/statsLiga.yaml
+tags:
+  - name: Estatísticas (Liga)
+    description: Rotas públicas para consumir estatísticas consolidadas das Ligas
+
+paths:
+  /estatisticas:
+    get:
+      tags: [Estatísticas (Liga)]
+      summary: Ranking geral de pontos da liga (ou geral)
+      security: []
+      parameters:
+        - in: query
+          name: liga_id
+          schema:
+            type: integer
+          description: (Opcional) Filtra estatísticas por uma liga específica.
+      responses:
+        '200':
+          description: OK - Ranking de pontos
+          # (Definir schema de retorno complexo)
+
+  /estatisticas/dashboard:
+    get:
+      tags: [Estatísticas (Liga)]
+      summary: Estatísticas rápidas para o dashboard (total de gols, artilheiro, etc.)
+      security: []
+      parameters:
+        - in: query
+          name: liga_id
+          schema:
+            type: integer
+          description: (Opcional) Filtra estatísticas por uma liga específica.
+      responses:
+        '200':
+          description: OK - Stats do dashboard
+
+  /estatisticas/artilharia:
+    get:
+      tags: [Estatísticas (Liga)]
+      summary: Ranking de artilharia da liga (ou geral)
+      security: []
+      parameters:
+        - in: query
+          name: liga_id
+          schema:
+            type: integer
+          description: (Opcional) Filtra estatísticas por uma liga específica.
+      responses:
+        '200':
+          description: OK - Ranking de artilharia
+
+  /estatisticas/assistencias:
+    get:
+      tags: [Estatísticas (Liga)]
+      summary: Ranking de assistências da liga (ou geral)
+      security: []
+      parameters:
+        - in: query
+          name: liga_id
+          schema:
+            type: integer
+          description: (Opcional) Filtra estatísticas por uma liga específica.
+      responses:
+        '200':
+          description: OK - Ranking de assistências
+
+  /estatisticas/premios:
+    get:
+      tags: [Estatísticas (Liga)]
+      summary: Ranking de prêmios (MVP, Pé de Rato) da liga (ou geral)
+      security: []
+      parameters:
+        - in: query
+          name: liga_id
+          schema:
+            type: integer
+          description: (Opcional) Filtra estatísticas por uma liga específica.
+      responses:
+        '200':
+          description: OK - Ranking de prêmios

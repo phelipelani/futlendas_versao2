@@ -1,0 +1,29 @@
+/times:
+  get:
+    summary: Listar times
+    tags:
+    - Times
+    responses:
+      '200':
+        description: Lista de times
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Time'
+  post:
+    summary: Criar time (Admin)
+    tags:
+    - Times
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Time'
+    responses:
+      '201':
+        description: Criado
+    security:
+    - bearerAuth: []

@@ -1,0 +1,14 @@
+/partidas/{id}/detalhes:
+  get:
+    summary: Buscar detalhes da partida
+    tags:
+    - Partidas
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Detalhes da partida

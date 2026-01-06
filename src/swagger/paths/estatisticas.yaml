@@ -1,0 +1,8 @@
+/estatisticas:
+  get:
+    summary: Ranking geral de jogadores
+    tags:
+    - Estatísticas
+    responses:
+      '200':
+        description: Ranking

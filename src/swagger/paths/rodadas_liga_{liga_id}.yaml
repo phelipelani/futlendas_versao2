@@ -1,0 +1,45 @@
+/rodadas/liga/{liga_id}:
+  get:
+    summary: Listar rodadas de uma liga
+    tags:
+    - Rodadas
+    parameters:
+    - name: liga_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Lista de rodadas
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Rodada'
+  post:
+    summary: Criar nova rodada (Admin)
+    tags:
+    - Rodadas
+    parameters:
+    - name: liga_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                format: date
+    responses:
+      '201':
+        description: Rodada criada
+    security:
+    - bearerAuth: []

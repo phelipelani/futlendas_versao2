@@ -1,0 +1,14 @@
+/partidas/globais:
+  get:
+    summary: Listar partidas globais
+    tags:
+    - Partidas
+    responses:
+      '200':
+        description: Lista de partidas
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Partida'

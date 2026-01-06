@@ -1,0 +1,286 @@
+# Arquivo: src/swagger/paths/campeonato.yaml
+tags:
+  - name: Campeonatos
+    description: Gerenciamento de campeonatos (times fixos)
+
+paths:
+  /campeonatos:
+    post:
+      tags: [Campeonatos]
+      summary: Cria um novo campeonato
+      security: [bearerAuth: []]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/CampeonatoInput'
+      responses:
+        '201':
+          description: Campeonato criado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/Campeonato'
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Não autorizado
+        '403':
+          description: Acesso negado
+        '409':
+          description: 'Conflito (nome duplicado)'
+
+  /campeonatos/{campeonato_id}:
+    put:
+      tags: [Campeonatos]
+      summary: 'Atualiza detalhes (nome, data) de um campeonato (Apenas na fase "inscricao")'
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/CampeonatoUpdateDetailsInput'
+      responses:
+        '200':
+          description: Campeonato atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '400':
+          description: 'Erro de validação ou campeonato não está na fase "inscricao"'
+        '404':
+          description: Campeonato não encontrado
+    delete:
+      tags: [Campeonatos]
+      summary: Deleta um campeonato (e todos os dados em cascata)
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Campeonato deletado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '404':
+          description: Campeonato não encontrado
+  
+  /campeonatos/{campeonato_id}/vencedores:
+    post:
+      tags: [Campeonatos]
+      summary: Adiciona vencedores (jogadores) a um campeonato finalizado
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/CampeonatoAddVencedoresInput'
+      responses:
+        '200':
+          description: Vencedores adicionados
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+
+  /campeonatos/{campeonato_id}/status:
+    patch:
+      tags: [Campeonatos]
+      summary: 'Atualiza o status (formato, fase) de um campeonato'
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/CampeonatoUpdateStatusInput'
+      responses:
+        '200':
+          description: Status atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '404':
+          description: Campeonato não encontrado
+
+  /campeonatos/{campeonato_id}/times:
+    post:
+      tags: [Campeonatos, Times (Fixos)]
+      summary: Registra um time fixo em um campeonato
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/CampeonatoRegisterTimeInput'
+      responses:
+        '201':
+          description: Time registrado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '409':
+          description: 'Conflito (time já registrado)'
+    get:
+      tags: [Campeonatos, Times (Fixos)]
+      summary: Lista os times registrados em um campeonato
+      security: [] # Pública
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: OK - Lista de times
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas.yaml#/components/schemas/TimeFixo'
+  
+  /campeonatos/{campeonato_id}/iniciar:
+    post:
+      tags: [Campeonatos]
+      summary: 'Inicia um campeonato (muda fase de "inscricao" e gera partidas)'
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Campeonato iniciado
+        '400':
+          description: 'Erro de regra de negócio (ex: formato não definido, número errado de times)'
+        '404':
+          description: Campeonato não encontrado
+
+  /campeonatos/{campeonato_id}/avancar-fase:
+    post:
+      tags: [Campeonatos]
+      summary: 'Avança a fase de um campeonato (gera semifinais, finais, etc.)'
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Fase avançada
+        '400':
+          description: 'Erro de regra de negócio (ex: partidas pendentes)'
+        '404':
+          description: Campeonato não encontrado
+
+  /campeonatos/{campeonato_id}/partidas:
+    post:
+      tags: [Campeonatos, Partidas (Campeonato)]
+      summary: 'Cria uma partida manual (para formatos "pontos_corridos_desafio")'
+      security: [bearerAuth: []]
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/CampeonatoCreatePartidaInput'
+      responses:
+        '201':
+          description: Partida criada
+        '400':
+          description: 'Campeonato não está na fase correta para partidas manuais'
+        '404':
+          description: Campeonato não encontrado
+  
+  /campeonatos/titulos:
+    get:
+      tags: [Campeonatos, Jogadores]
+      summary: 'Lista o ranking de títulos por jogador (geral)'
+      security: [] # Pública
+      responses:
+        '200':
+          description: OK - Lista de títulos
+          # (Definir schema de retorno se necessário)
+  
+  /campeonatos/{campeonato_id}/classificacao:
+    get:
+      tags: [Campeonatos, Estatísticas]
+      summary: 'Busca a tabela de classificação (NÃO IMPLEMENTADO)'
+      security: [] # Pública
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '501':
+          description: Rota não implementada no Model
+
+  /campeonatos/{campeonato_id}/estatisticas-jogadores:
+    get:
+      tags: [Campeonatos, Estatísticas]
+      summary: Busca as estatísticas (gols, assists) dos jogadores no campeonato
+      security: [] # Pública
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: OK - Lista de estatísticas
+          # (Definir schema de retorno se necessário)
+
+  /campeonatos/{campeonato_id}/premios:
+    get:
+      tags: [Campeonatos, Estatísticas]
+      summary: Busca os prêmios (artilheiro, etc.) do campeonato
+      security: [] # Pública
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: OK - Lista de prêmios
+          # (Definir schema de retorno se necessário)

@@ -1,0 +1,8 @@
+/estatisticas/artilharia:
+  get:
+    summary: Artilharia geral
+    tags:
+    - Estatísticas
+    responses:
+      '200':
+        description: Artilharia

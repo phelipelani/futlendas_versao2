@@ -1,0 +1,20 @@
+/jogadores/rodada/{rodada_id}:
+  get:
+    summary: Listar jogadores confirmados em uma rodada
+    tags:
+    - Jogadores
+    parameters:
+    - name: rodada_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Lista
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Jogador'

@@ -1,0 +1,16 @@
+/rodadas/{rodada_id}/finalizar:
+  post:
+    summary: Finalizar rodada (Admin)
+    tags:
+    - Rodadas
+    parameters:
+    - name: rodada_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Rodada finalizada
+    security:
+    - bearerAuth: []

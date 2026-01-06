@@ -1,0 +1,30 @@
+/auth/login:
+  post:
+    summary: Realizar login
+    tags:
+    - Auth
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+    responses:
+      '200':
+        description: Login bem-sucedido
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthResponse'
+      '401':
+        description: Credenciais inválidas
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+    security: []

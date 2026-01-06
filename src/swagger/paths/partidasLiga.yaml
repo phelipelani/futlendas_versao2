@@ -1,0 +1,80 @@
+# Arquivo: src/swagger/paths/partidasLiga.yaml
+# (Nomeado 'partidasLiga' para diferenciar de 'partidasCampeonato')
+tags:
+  - name: Partidas (Liga)
+    description: Gerenciamento dos resultados das partidas das Ligas (sorteio)
+
+paths:
+  /partidas/{partida_id}/resultados:
+    put:
+      tags: [Partidas (Liga)]
+      summary: Salva/Atualiza o resultado de uma partida da liga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: partida_id
+          in: path
+          required: true
+          description: ID da partida da liga
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/PartidaLigaResultadoInput'
+      responses:
+        '200':
+          description: Resultados salvos com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '400':
+          description: 'Erro de validação (payload incompleto)'
+        '401':
+          description: Não autorizado
+        '403':
+          description: Acesso negado
+        '404':
+          description: Partida não encontrada
+        '409':
+          description: 'Conflito (ex: ID de jogador inválido)'
+  
+  /partidas/{partida_id}/golcontra:
+    post:
+      tags: [Partidas (Liga)]
+      summary: Registra um gol contra em uma partida da liga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: partida_id
+          in: path
+          required: true
+          description: ID da partida da liga
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/PartidaLigaGolContraInput'
+      responses:
+        '200':
+          description: Gol contra registrado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '400':
+          description: 'Erro de validação (payload incompleto)'
+        '401':
+          description: Não autorizado
+        '403':
+          description: Acesso negado
+        '404':
+          description: Partida não encontrada

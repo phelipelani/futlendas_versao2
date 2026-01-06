@@ -1,0 +1,5 @@
+migrar baco de dados para php
+arrumar a feature ligas
+arrumar a feature campeonatos mata a mata
+verificar as estatisticas se esta sendo salvo direito
+salvar o historico dos jogadores. 

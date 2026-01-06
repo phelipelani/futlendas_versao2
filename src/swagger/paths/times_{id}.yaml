@@ -1,0 +1,18 @@
+/times/{id}:
+  get:
+    summary: Buscar time por ID
+    tags:
+    - Times
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Time
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Time'

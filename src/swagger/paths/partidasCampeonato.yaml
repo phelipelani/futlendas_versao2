@@ -1,0 +1,70 @@
+# Arquivo: src/swagger/paths/partidasCampeonato.yaml
+tags:
+  - name: Partidas (Campeonato)
+    description: Gerenciamento das partidas dos Campeonatos (times fixos)
+
+paths:
+  /camp-partidas/{partida_id}/resultado:
+    put:
+      tags: [Partidas (Campeonato)]
+      summary: Salva/Atualiza o resultado de uma partida de campeonato
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: partida_id
+          in: path
+          required: true
+          description: ID da partida do campeonato
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/PartidaCampeonatoResultadoInput'
+      responses:
+        '200':
+          description: Resultado salvo com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '400':
+          description: 'Erro de validação (placar faltando)'
+        '401':
+          description: Não autorizado
+        '403':
+          description: Acesso negado
+        '404':
+          description: Partida não encontrada
+        '409':
+          description: 'Conflito (ex: ID de jogador inválido)'
+  
+  /camp-partidas/campeonato/{campeonato_id}:
+    get:
+      tags: [Partidas (Campeonato)]
+      summary: Lista todas as partidas de um campeonato específico
+      security: [] # Pública
+      parameters:
+        - name: campeonato_id
+          in: path
+          required: true
+          description: ID do campeonato
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: OK - Lista de partidas do campeonato
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas.yaml#/components/schemas/PartidaCampeonato'
+        '400':
+          description: ID do campeonato inválido
+        '404':
+          description: Campeonato não encontrado

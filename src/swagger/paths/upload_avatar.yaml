@@ -1,0 +1,18 @@
+/upload/avatar:
+  post:
+    summary: Upload avatar
+    tags:
+    - Uploads
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
+    responses:
+      '200':
+        description: Arquivo enviado

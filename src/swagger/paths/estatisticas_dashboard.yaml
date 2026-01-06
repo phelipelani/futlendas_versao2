@@ -1,0 +1,8 @@
+/estatisticas/dashboard:
+  get:
+    summary: Estatísticas para dashboard
+    tags:
+    - Estatísticas
+    responses:
+      '200':
+        description: Dashboard stats

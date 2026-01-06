@@ -1,0 +1,16 @@
+/rodadas/{rodada_id}/partidas:
+  post:
+    summary: Criar partida na rodada (Admin)
+    tags:
+    - Rodadas
+    parameters:
+    - name: rodada_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '201':
+        description: Partida criada
+    security:
+    - bearerAuth: []

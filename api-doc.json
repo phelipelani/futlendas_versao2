@@ -1,0 +1,2299 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FutLendas API",
+    "version": "1.0.0",
+    "description": "Documentação da API backend para o aplicativo FutLendas."
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Servidor de Desenvolvimento Local" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "schemas": {
+      "GoleiroStats": {
+        "type": "object",
+        "description": "Schema com as estatísticas de desempenho de um goleiro.",
+        "properties": {
+          "jogador_id": {
+            "type": "integer",
+            "description": "ID do jogador (goleiro).",
+            "example": 5
+          },
+          "nome_goleiro": {
+            "type": "string",
+            "description": "Nome do goleiro.",
+            "example": "Alisson Becker"
+          },
+          "total_jogos": {
+            "type": "integer",
+            "description": "Número total de partidas jogadas como goleiro.",
+            "example": 10
+          },
+          "total_gols_sofridos": {
+            "type": "integer",
+            "description": "Número total de gols sofridos.",
+            "example": 8
+          },
+          "total_vitorias": {
+            "type": "integer",
+            "description": "Número de partidas vencidas como goleiro.",
+            "example": 6
+          },
+          "total_derrotas": {
+            "type": "integer",
+            "description": "Número de partidas perdidas como goleiro.",
+            "example": 2
+          },
+          "total_segundos_jogados": {
+            "type": "integer",
+            "description": "Tempo total em segundos jogado como goleiro.",
+            "example": 5400
+          },
+          "total_minutos_jogados": {
+            "type": "number",
+            "format": "float",
+            "description": "Tempo total em minutos jogado como goleiro.",
+            "example": 90
+          },
+          "media_gols_sofridos_por_minuto": {
+            "type": "number",
+            "format": "float",
+            "description": "Média de gols sofridos por minuto em campo. Usado para ranking.",
+            "example": 0.09
+          }
+        }
+      },
+      "JogadorComUsuario": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Cristiano Ronaldo" },
+          "role": { "type": "string", "example": "player" },
+          "posicao": { "type": "string", "enum": ["linha", "goleiro"], "example": "linha" },
+          "nivel": { "type": "integer", "example": 5 },
+          "joga_recuado": { "type": "boolean", "example": false },
+          "foto_url": {
+            "type": "string",
+            "format": "url",
+            "nullable": true,
+            "example": "http://example.com/foto.jpg"
+          },
+          "usuario": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "example": 101 },
+              "username": { "type": "string", "example": "cr7_user" },
+              "role": { "type": "string", "enum": ["user", "admin"], "example": "user" },
+              "tem_conta_ativa": { "type": "boolean", "example": true }
+            }
+          }
+        }
+      },
+      "StatsGeraisJogador": {
+        "type": "object",
+        "properties": {
+          "jogador_id": { "type": "integer", "example": 10 },
+          "nome": { "type": "string", "example": "Gabigol" },
+          "vitorias": { "type": "integer", "example": 15 },
+          "derrotas": { "type": "integer", "example": 5 },
+          "empates": { "type": "integer", "example": 3 },
+          "gols": { "type": "integer", "example": 25 },
+          "assistencias": { "type": "integer", "example": 12 },
+          "gols_contra": { "type": "integer", "example": 1 },
+          "clean_sheets": { "type": "integer", "example": 4 },
+          "total_pontos": { "type": "number", "format": "float", "example": 150.5 },
+          "mvp_count": { "type": "integer", "example": 5 },
+          "pe_de_rato_count": { "type": "integer", "example": 1 },
+          "artilheiro_rodada_count": { "type": "integer", "example": 3 },
+          "assist_rodada_count": { "type": "integer", "example": 2 }
+        }
+      },
+      "RankingArtilharia": {
+        "type": "object",
+        "properties": {
+          "jogador_id": { "type": "integer", "example": 10 },
+          "nome": { "type": "string", "example": "Gabigol" },
+          "total_gols": { "type": "integer", "example": 25 }
+        }
+      },
+      "RankingAssistencias": {
+        "type": "object",
+        "properties": {
+          "jogador_id": { "type": "integer", "example": 12 },
+          "nome": { "type": "string", "example": "Arrascaeta" },
+          "total_assistencias": { "type": "integer", "example": 18 }
+        }
+      },
+      "RankingPremios": {
+        "type": "object",
+        "properties": {
+          "jogador_id": { "type": "integer", "example": 10 },
+          "nome": { "type": "string", "example": "Gabigol" },
+          "mvp": { "type": "integer", "example": 5 },
+          "pe_de_rato": { "type": "integer", "example": 1 },
+          "artilheiro_rodada": { "type": "integer", "example": 3 },
+          "assist_rodada": { "type": "integer", "example": 2 }
+        }
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "username": { "type": "string", "example": "admin_user" },
+          "role": { "type": "string", "enum": ["user", "admin"], "example": "admin" }
+        }
+      },
+      "Jogador": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Lionel Messi" },
+          "role": { "type": "string", "default": "player", "example": "player" },
+          "joga_recuado": { "type": "boolean", "default": false, "example": false },
+          "nivel": { "type": "integer", "default": 1, "example": 5 },
+          "posicao": {
+            "type": "string",
+            "enum": ["linha", "goleiro"],
+            "default": "linha",
+            "example": "linha"
+          },
+          "foto_url": {
+            "type": "string",
+            "nullable": true,
+            "format": "url",
+            "example": "http://example.com/foto.jpg"
+          }
+        }
+      },
+      "Liga": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Temporada 2025/1" },
+          "data_inicio": { "type": "string", "format": "date", "example": "2025-01-01" },
+          "data_fim": { "type": "string", "format": "date", "example": "2025-06-30" },
+          "finalizada_em": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Data e hora em que a liga foi efetivamente finalizada. Nulo se ainda estiver ativa.",
+            "example": "2025-06-15T10:30:00.000Z"
+          }
+        }
+      },
+      "Rodada": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "liga_id": { "type": "integer", "example": 1 },
+          "data": { "type": "string", "format": "date", "example": "2025-01-15" },
+          "status": { "type": "string", "enum": ["aberta", "finalizada"], "example": "aberta" }
+        }
+      },
+      "PartidaLiga": {
+        "type": "object",
+        "description": "Schema para partidas da Liga (sorteio )",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "data": { "type": "string", "format": "date", "example": "2025-01-15" },
+          "rodada_id": { "type": "integer", "example": 1 },
+          "placar_time1": { "type": "integer", "default": 0 },
+          "placar_time2": { "type": "integer", "default": 0 },
+          "duracao_segundos": { "type": "integer", "default": 0 },
+          "time1_numero": { "type": "integer", "nullable": true },
+          "time2_numero": { "type": "integer", "nullable": true },
+          "goleiro_time1_id": { "type": "integer", "nullable": true },
+          "goleiro_time2_id": { "type": "integer", "nullable": true }
+        }
+      },
+      "TimeFixo": {
+        "type": "object",
+        "description": "Schema para times fixos (campeonato)",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Barcelona" },
+          "logo_url": { "type": "string", "format": "url", "nullable": true }
+        }
+      },
+      "Campeonato": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Champions League FutLendas" },
+          "data": { "type": "string", "format": "date", "example": "2025-03-01" },
+          "formato": { "type": "string", "nullable": true, "example": "repescagem_4_times" },
+          "fase_atual": { "type": "string", "default": "inscricao", "example": "inscricao" },
+          "time_campeao_id": { "type": "integer", "nullable": true }
+        }
+      },
+      "PartidaCampeonato": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "campeonato_id": { "type": "integer", "example": 1 },
+          "fase": { "type": "string", "example": "fase_de_pontos" },
+          "timeA_id": { "type": "integer", "example": 1 },
+          "timeB_id": { "type": "integer", "example": 2 },
+          "nome_timeA": {
+            "type": "string",
+            "example": "Time A",
+            "description": "Adicionado via JOIN na query"
+          },
+          "nome_timeB": {
+            "type": "string",
+            "example": "Time B",
+            "description": "Adicionado via JOIN na query"
+          },
+          "placar_timeA": { "type": "integer", "nullable": true },
+          "placar_timeB": { "type": "integer", "nullable": true },
+          "placar_penaltis_timeA": { "type": "integer", "nullable": true },
+          "placar_penaltis_timeB": { "type": "integer", "nullable": true },
+          "duracao_segundos": { "type": "integer", "nullable": true },
+          "goleiro_timeA_id": { "type": "integer", "nullable": true },
+          "goleiro_timeB_id": { "type": "integer", "nullable": true },
+          "status": { "type": "string", "default": "pendente", "example": "pendente" }
+        }
+      },
+      "AuthLoginInput": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": { "type": "string", "example": "admin_user" },
+          "password": { "type": "string", "format": "password", "example": "password123" }
+        }
+      },
+      "AuthRegisterInput": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": { "type": "string", "example": "new_user" },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 6,
+            "example": "newpass123"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "admin"],
+            "default": "user",
+            "example": "user"
+          }
+        }
+      },
+      "JogadorInput": {
+        "type": "object",
+        "required": ["nome"],
+        "properties": {
+          "nome": { "type": "string", "example": "Neymar Jr" },
+          "role": { "type": "string", "default": "player" },
+          "posicao": { "type": "string", "enum": ["linha", "goleiro"], "default": "linha" },
+          "foto_url": { "type": "string", "format": "url", "nullable": true }
+        }
+      },
+      "JogadorUpdateInput": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "nome": { "type": "string", "example": "Neymar" },
+          "nivel": { "type": "integer", "minimum": 1, "example": 4 },
+          "posicao": { "type": "string", "enum": ["linha", "goleiro"] },
+          "joga_recuado": { "type": "boolean" },
+          "foto_url": { "type": "string", "format": "url", "nullable": true }
+        }
+      },
+      "LigaInput": {
+        "type": "object",
+        "required": ["nome", "data_inicio", "data_fim"],
+        "properties": {
+          "nome": { "type": "string", "example": "Temporada 2025/2" },
+          "data_inicio": { "type": "string", "format": "date", "example": "2025-07-01" },
+          "data_fim": { "type": "string", "format": "date", "example": "2025-12-31" }
+        }
+      },
+      "LigaUpdateInput": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "nome": { "type": "string", "example": "Temporada 2025/2 - Editada" },
+          "data_inicio": { "type": "string", "format": "date", "example": "2025-07-02" },
+          "data_fim": { "type": "string", "format": "date", "example": "2025-12-30" }
+        }
+      },
+      "RodadaInput": {
+        "type": "object",
+        "required": ["data"],
+        "properties": { "data": { "type": "string", "format": "date", "example": "2025-07-15" } }
+      },
+      "RodadaUpdateInput": {
+        "type": "object",
+        "required": ["data"],
+        "properties": { "data": { "type": "string", "format": "date", "example": "2025-07-16" } }
+      },
+      "RodadaSyncJogadoresInput": {
+        "type": "object",
+        "required": ["nomes"],
+        "properties": {
+          "nomes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "example": ["Jogador A", "Jogador B", "Novo Jogador C"]
+          }
+        }
+      },
+      "RodadaSaveTimesInput": {
+        "type": "object",
+        "required": ["times"],
+        "properties": {
+          "times": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "nome": { "type": "string", "example": "Time Amarelo" },
+                "jogadores": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["id"],
+                    "properties": { "id": { "type": "integer", "example": 1 } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PartidaLigaResultadoInput": {
+        "type": "object",
+        "description": "Corpo da requisição para finalizar e salvar os resultados de uma partida da liga.",
+        "required": [
+          "placar1",
+          "placar2",
+          "duracao",
+          "time1",
+          "time2",
+          "eventos",
+          "time1_numero",
+          "time2_numero"
+        ],
+        "properties": {
+          "placar1": {
+            "type": "integer",
+            "description": "Número de gols marcados pelo Time 1.",
+            "example": 5
+          },
+          "placar2": {
+            "type": "integer",
+            "description": "Número de gols marcados pelo Time 2.",
+            "example": 3
+          },
+          "duracao": {
+            "type": "integer",
+            "description": "Duração total da partida em segundos.",
+            "example": 900
+          },
+          "time1_numero": {
+            "type": "integer",
+            "description": "Identificador numérico do time 1.",
+            "example": 1
+          },
+          "time2_numero": {
+            "type": "integer",
+            "description": "Identificador numérico do time 2.",
+            "example": 2
+          },
+          "goleiro_time1_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID do jogador que atuou como goleiro no time 1.",
+            "example": 10
+          },
+          "goleiro_time2_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID do jogador que atuou como goleiro no time 2.",
+            "example": 20
+          },
+          "time1": {
+            "type": "array",
+            "description": "Lista de jogadores que compuseram o Time 1.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer", "description": "ID do jogador.", "example": 10 },
+                "joga_recuado": {
+                  "type": "integer",
+                  "description": "Flag (1 para sim, 0 para não) que indica se o jogador atuou em posição defensiva.",
+                  "example": 1
+                }
+              }
+            }
+          },
+          "time2": {
+            "type": "array",
+            "description": "Lista de jogadores que compuseram o Time 2.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "integer", "description": "ID do jogador.", "example": 21 },
+                "joga_recuado": {
+                  "type": "integer",
+                  "description": "Flag (1 para sim, 0 para não) que indica se o jogador atuou em posição defensiva.",
+                  "example": 0
+                }
+              }
+            }
+          },
+          "eventos": {
+            "type": "array",
+            "description": "Uma lista cronológica de todos os eventos que ocorreram na partida.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tipo": {
+                  "type": "string",
+                  "enum": ["gol", "gol_contra"],
+                  "description": "O tipo de evento.",
+                  "example": "gol"
+                },
+                "jogador_id": {
+                  "type": "integer",
+                  "description": "ID do jogador que executou o evento (quem fez o gol ou o gol contra).",
+                  "example": 12
+                },
+                "assist_por_jogador_id": {
+                  "type": "integer",
+                  "nullable": true,
+                  "description": "ID do jogador que deu a assistência (apenas para eventos do tipo 'gol').",
+                  "example": 15
+                },
+                "tempo_segundos": {
+                  "type": "integer",
+                  "description": "O momento do jogo em que o evento ocorreu, em segundos.",
+                  "example": 450
+                }
+              }
+            }
+          }
+        }
+      },
+      "TimeFixoInput": {
+        "type": "object",
+        "required": ["nome"],
+        "properties": {
+          "nome": { "type": "string", "example": "Real Madrid" },
+          "logo_url": { "type": "string", "format": "url", "nullable": true }
+        }
+      },
+      "TimeFixoUpdateInput": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "nome": { "type": "string", "example": "Real Madrid CF" },
+          "logo_url": { "type": "string", "format": "url", "nullable": true }
+        }
+      },
+      "TimeAddJogadoresInput": {
+        "type": "object",
+        "required": ["jogador_ids"],
+        "properties": {
+          "jogador_ids": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 1,
+            "example": [1, 5, 10]
+          }
+        }
+      },
+      "CampeonatoInput": {
+        "type": "object",
+        "required": ["nome", "data"],
+        "properties": {
+          "nome": { "type": "string", "example": "Copa FutLendas 2025" },
+          "data": { "type": "string", "format": "date", "example": "2025-08-01" }
+        }
+      },
+      "CampeonatoUpdateDetailsInput": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "nome": { "type": "string" },
+          "data": { "type": "string", "format": "date" }
+        }
+      },
+      "CampeonatoUpdateStatusInput": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "formato": { "type": "string", "example": "repescagem_4_times" },
+          "fase_atual": { "type": "string", "example": "fase_de_pontos" }
+        }
+      },
+      "CampeonatoRegisterTimeInput": {
+        "type": "object",
+        "required": ["time_id"],
+        "properties": { "time_id": { "type": "integer" } }
+      },
+      "CampeonatoAddVencedoresInput": {
+        "type": "object",
+        "required": ["jogadores_ids"],
+        "properties": {
+          "jogadores_ids": { "type": "array", "items": { "type": "integer" }, "minItems": 1 }
+        }
+      },
+      "CampeonatoCreatePartidaInput": {
+        "type": "object",
+        "required": ["timeA_id", "timeB_id"],
+        "properties": { "timeA_id": { "type": "integer" }, "timeB_id": { "type": "integer" } }
+      },
+      "PartidaCampeonatoResultadoInput": {
+        "type": "object",
+        "required": ["placar_timeA", "placar_timeB"],
+        "properties": {
+          "placar_timeA": { "type": "integer" },
+          "placar_timeB": { "type": "integer" },
+          "placar_penaltis_timeA": { "type": "integer", "nullable": true },
+          "placar_penaltis_timeB": { "type": "integer", "nullable": true },
+          "duracao_segundos": { "type": "integer", "nullable": true },
+          "goleiro_timeA_id": { "type": "integer", "nullable": true },
+          "goleiro_timeB_id": { "type": "integer", "nullable": true },
+          "estatisticasJogadores": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["jogador_id", "time_id"],
+              "properties": {
+                "jogador_id": { "type": "integer" },
+                "time_id": { "type": "integer" },
+                "gols": { "type": "integer", "default": 0 },
+                "assistencias": { "type": "integer", "default": 0 }
+              }
+            }
+          }
+        }
+      },
+      "SuccessMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de sucesso.",
+            "example": "Operação realizada com sucesso."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro principal.",
+            "example": "Erro de validação."
+          },
+          "errors": {
+            "type": "array",
+            "items": { "type": "object" },
+            "description": "(Opcional) Detalhes de erros de validação.",
+            "example": [
+              {
+                "type": "field",
+                "value": "",
+                "msg": "O nome é obrigatório.",
+                "path": "nome",
+                "location": "body"
+              }
+            ]
+          },
+          "error": {
+            "type": "string",
+            "description": "(Opcional) Detalhes do erro interno (apenas em dev).",
+            "example": "SQLITE_CONSTRAINT: UNIQUE constraint failed: ligas.nome"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "LigaIdQuery": {
+        "in": "query",
+        "name": "liga_id",
+        "schema": { "type": "integer" },
+        "description": "(Opcional) ID da liga para filtrar as estatísticas. Se não for fornecido, retorna estatísticas gerais de todo o sistema.",
+        "example": 1
+      }
+    }
+  },
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Realizar login",
+        "description": "Autentica um usuário com username e senha, retornando um token JWT para ser usado nas rotas protegidas.",
+        "tags": ["Autenticação"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AuthLoginInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido. Retorna o token e os dados do usuário.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Login bem-sucedido!" },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": { "$ref": "#/components/schemas/Usuario" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Erro de validação (campos faltando)." },
+          "401": { "description": "Credenciais inválidas (username ou senha incorretos)." }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Registrar novo usuário (Admin)",
+        "description": "Cria um novo usuário no sistema. Esta rota é protegida e requer permissão de administrador.",
+        "tags": ["Autenticação"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/AuthRegisterInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário criado com sucesso." },
+          "400": { "description": "Dados inválidos (ex: senha curta, username faltando)." },
+          "401": { "description": "Não autenticado (token ausente ou inválido)." },
+          "403": { "description": "Acesso negado (usuário não é admin)." },
+          "409": { "description": "Conflito, o username já existe." }
+        }
+      }
+    },
+    "/auth/convites": {
+      "get": {
+        "summary": "Listar todos os convites (Admin)",
+        "description": "Retorna uma lista de todos os convites já gerados, incluindo seus status (pendente, usado, expirado). Requer permissão de administrador.",
+        "tags": ["Convites"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de convites retornada com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." }
+        }
+      }
+    },
+    "/auth/convite/gerar": {
+      "post": {
+        "summary": "Gerar convite para um jogador (Admin)",
+        "description": "Cria um link de ativação único para um jogador existente que ainda não possui uma conta de usuário.",
+        "tags": ["Convites"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["jogador_id"],
+                "properties": {
+                  "jogador_id": {
+                    "type": "integer",
+                    "description": "ID do jogador para o qual o convite será gerado.",
+                    "example": 1
+                  },
+                  "tipo_usuario": {
+                    "type": "string",
+                    "enum": ["user", "admin"],
+                    "description": "O tipo de usuário que será criado ao ativar o convite.",
+                    "default": "user"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Convite gerado com sucesso. Retorna o token do convite." },
+          "400": {
+            "description": "Requisição inválida (ex: jogador já possui conta ou convite ativo)."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Jogador não encontrado." }
+        }
+      }
+    },
+    "/auth/convite/admin": {
+      "post": {
+        "summary": "Gerar convite para um novo admin (Admin)",
+        "description": "Cria um link de ativação para um novo administrador, associado a um e-mail.",
+        "tags": ["Convites"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email do futuro administrador.",
+                    "example": "novo.admin@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Convite de admin gerado com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "409": { "description": "Conflito, já existe um usuário ou convite para este e-mail." }
+        }
+      }
+    },
+    "/auth/convite/validar/{token}": {
+      "get": {
+        "summary": "Validar token de convite",
+        "description": "Verifica se um token de convite é válido, não expirou e ainda não foi utilizado. Ideal para o frontend verificar o token antes de exibir o formulário de ativação.",
+        "tags": ["Convites"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "O token recebido no link de convite."
+          }
+        ],
+        "responses": {
+          "200": { "description": "Convite válido e pronto para ser usado." },
+          "404": { "description": "Convite não encontrado, expirado ou já utilizado." }
+        }
+      }
+    },
+    "/auth/convite/ativar": {
+      "post": {
+        "summary": "Ativar conta com token de convite",
+        "description": "Permite que um usuário com um token de convite válido defina seu nome de usuário e senha para ativar sua conta no sistema.",
+        "tags": ["Convites"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token", "username", "password"],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "O token recebido no link de convite."
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "O nome de usuário desejado (deve ser único).",
+                    "example": "jogador123"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "A senha desejada (mínimo de 6 caracteres).",
+                    "example": "minhasenha123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Conta ativada com sucesso. Retorna um token de login." },
+          "400": { "description": "Dados inválidos (ex: senha curta) ou token inválido/expirado." },
+          "404": { "description": "Convite não encontrado." },
+          "409": { "description": "O nome de usuário escolhido já está em uso." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/partidas": {
+      "get": {
+        "summary": "Listar todas as partidas de um campeonato",
+        "description": "Retorna uma lista completa de todas as partidas associadas a um campeonato, de todas as fases, incluindo os nomes dos times.",
+        "tags": ["Campeonatos - Partidas"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "O ID do campeonato para buscar as partidas."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de partidas retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PartidaCampeonato" }
+                }
+              }
+            }
+          },
+          "400": { "description": "ID do campeonato inválido." }
+        }
+      },
+      "post": {
+        "summary": "Criar partida manual no campeonato (Admin)",
+        "description": "Cria manualmente uma partida entre dois times. Usado para formatos como 'pontos_corridos_desafio' onde as partidas são criadas sob demanda.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampeonatoCreatePartidaInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Partida criada com sucesso." },
+          "400": {
+            "description": "O campeonato não está em uma fase que permite criação manual de partidas."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      }
+    },
+    "/campeonatos/partidas/{partida_id}/resultado": {
+      "put": {
+        "summary": "Salvar resultado de uma partida de campeonato (Admin)",
+        "description": "Registra o resultado final de uma partida do campeonato, incluindo placar, estatísticas individuais dos jogadores (gols, assistências), e informações opcionais como placar de pênaltis e duração. Esta ação marca a partida como 'finalizada'.\n",
+        "tags": ["Campeonatos - Partidas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "partida_id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "O ID da partida a ser atualizada."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PartidaCampeonatoResultadoInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Resultado da partida salvo com sucesso." },
+          "400": { "description": "Dados inválidos na requisição (ex: placar faltando)." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Partida não encontrada." },
+          "500": { "description": "Erro interno ao salvar os dados." }
+        }
+      }
+    },
+    "/campeonatos": {
+      "post": {
+        "summary": "Criar novo campeonato (Admin)",
+        "description": "Cria um novo campeonato com status inicial 'inscricao'.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CampeonatoInput" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campeonato criado com sucesso.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Campeonato" } }
+            }
+          },
+          "400": { "description": "Dados inválidos na requisição." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." }
+        }
+      }
+    },
+    "/campeonatos/titulos": {
+      "get": {
+        "summary": "Listar todos os títulos por jogador",
+        "description": "Retorna uma lista de jogadores e a contagem de títulos de campeonatos que cada um venceu.",
+        "tags": ["Campeonatos"],
+        "responses": { "200": { "description": "Lista de títulos por jogador." } }
+      }
+    },
+    "/campeonatos/{campeonato_id}": {
+      "put": {
+        "summary": "Atualizar detalhes do campeonato (Admin)",
+        "description": "Atualiza o nome e/ou a data de um campeonato. Só é permitido se o campeonato ainda estiver na fase de 'inscricao'.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampeonatoUpdateDetailsInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Campeonato atualizado com sucesso." },
+          "400": {
+            "description": "Dados inválidos ou tentativa de editar um campeonato que não está mais na fase de 'inscricao'."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      },
+      "delete": {
+        "summary": "Deletar campeonato (Admin)",
+        "description": "Remove permanentemente um campeonato e todos os seus dados associados (times inscritos, partidas, estatísticas) via ON DELETE CASCADE.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Campeonato deletado com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/times": {
+      "get": {
+        "summary": "Listar times do campeonato",
+        "description": "Retorna todos os times que estão inscritos no campeonato especificado.",
+        "tags": ["Campeonatos"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": { "200": { "description": "Lista de times retornada com sucesso." } }
+      },
+      "post": {
+        "summary": "Registrar time no campeonato (Admin)",
+        "description": "Inscreve um time existente em um campeonato que está na fase de 'inscricao'.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampeonatoRegisterTimeInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Time registrado com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "409": { "description": "Conflito: O time já está registrado neste campeonato." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/status": {
+      "patch": {
+        "summary": "Atualizar status do campeonato (Admin)",
+        "description": "Atualiza o formato (ex: 'repescagem_4_times') e/ou a fase atual (ex: 'fase_de_pontos') de um campeonato.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampeonatoUpdateStatusInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status atualizado com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/iniciar": {
+      "post": {
+        "summary": "Iniciar campeonato (Admin)",
+        "description": "Muda o status do campeonato de 'inscricao' para a primeira fase (ex: 'fase_de_pontos') e gera automaticamente as partidas iniciais com base no formato definido.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Campeonato iniciado com sucesso." },
+          "400": {
+            "description": "Não foi possível iniciar: o campeonato não está na fase 'inscricao', o formato não foi definido ou o número de times é incompatível com o formato."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/avancar-fase": {
+      "post": {
+        "summary": "Avançar fase do campeonato (Admin)",
+        "description": "Avança o campeonato para a próxima fase (ex: de 'fase_de_pontos' para 'semifinal'), gerando as partidas da nova fase com base nos resultados da fase anterior.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Fase avançada com sucesso." },
+          "400": {
+            "description": "Não foi possível avançar: a fase atual não pode ser avançada, ou ainda existem partidas pendentes."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/vencedores": {
+      "post": {
+        "summary": "Registrar vencedores do campeonato (Admin)",
+        "description": "Associa uma lista de jogadores como os vencedores de um campeonato finalizado.",
+        "tags": ["Campeonatos"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CampeonatoAddVencedoresInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Vencedores registrados com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/classificacao": {
+      "get": {
+        "summary": "Obter classificação do campeonato",
+        "description": "Retorna a tabela de classificação em tempo real para a fase de pontos do campeonato, ordenada por pontos e critérios de desempate.",
+        "tags": ["Campeonatos"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Tabela de classificação retornada com sucesso." },
+          "501": {
+            "description": "Funcionalidade não implementada (se a função no controller estiver comentada)."
+          }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/estatisticas-jogadores": {
+      "get": {
+        "summary": "Obter estatísticas dos jogadores no campeonato",
+        "description": "Retorna estatísticas individuais agregadas (gols, assistências) de todos os jogadores que participaram do campeonato.",
+        "tags": ["Campeonatos"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Estatísticas dos jogadores retornadas com sucesso." }
+        }
+      }
+    },
+    "/campeonatos/{campeonato_id}/premios": {
+      "get": {
+        "summary": "Obter prêmios individuais do campeonato",
+        "description": "Retorna os prêmios individuais do campeonato, como Artilheiro e Líder de Assistências, após terem sido calculados e salvos.",
+        "tags": ["Campeonatos"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": { "200": { "description": "Lista de prêmios retornada com sucesso." } }
+      }
+    },
+    "/goleiro-stats/liga": {
+      "get": {
+        "summary": "Estatísticas dos goleiros por Liga",
+        "description": "Retorna um ranking de desempenho de todos os goleiros que jogaram em uma liga específica, ordenado pela melhor média de gols sofridos.",
+        "tags": ["Estatísticas de Goleiros"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "liga_id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "O ID da liga para a qual as estatísticas serão calculadas.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranking de estatísticas dos goleiros retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/GoleiroStats" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida: o query parameter 'liga_id' é obrigatório."
+          }
+        }
+      }
+    },
+    "/goleiro-stats/campeonato/{campeonato_id}": {
+      "get": {
+        "summary": "Estatísticas dos goleiros por Campeonato",
+        "description": "Retorna um ranking de desempenho de todos os goleiros que jogaram em um campeonato específico, ordenado pela melhor média de gols sofridos.",
+        "tags": ["Estatísticas de Goleiros"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "campeonato_id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "O ID do campeonato para o qual as estatísticas serão calculadas.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranking de estatísticas dos goleiros retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/GoleiroStats" }
+                }
+              }
+            }
+          },
+          "400": { "description": "ID do campeonato inválido." },
+          "404": { "description": "Campeonato não encontrado." }
+        }
+      }
+    },
+    "/jogadores": {
+      "get": {
+        "summary": "Listar todos os jogadores",
+        "description": "Retorna a lista completa de jogadores, com a opção de filtrar por posição e/ou nível. Inclui informações sobre a conta de usuário vinculada a cada jogador.",
+        "tags": ["Jogadores"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "posicao",
+            "schema": { "type": "string", "enum": ["linha", "goleiro"] },
+            "description": "(Opcional ) Filtra jogadores pela posição."
+          },
+          {
+            "in": "query",
+            "name": "nivel",
+            "schema": { "type": "integer" },
+            "description": "(Opcional) Filtra jogadores pelo nível."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogadores retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/JogadorComUsuario" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar novo jogador (Admin)",
+        "description": "Cadastra um novo jogador no sistema.",
+        "tags": ["Jogadores"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/JogadorInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Jogador criado com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "409": { "description": "Conflito: Um jogador com este nome já existe." }
+        }
+      }
+    },
+    "/jogadores/{id}": {
+      "get": {
+        "summary": "Buscar jogador por ID",
+        "description": "Retorna os detalhes de um jogador específico, incluindo informações sobre sua conta de usuário vinculada (se houver).",
+        "tags": ["Jogadores"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do jogador retornados com sucesso.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/JogadorComUsuario" } }
+            }
+          },
+          "404": { "description": "Jogador não encontrado." }
+        }
+      },
+      "delete": {
+        "summary": "Deletar jogador (Admin)",
+        "description": "Remove um jogador do sistema. Esta ação também remove o jogador de todos os times e rodadas, e limpa suas referências como goleiro em partidas, antes de deletá-lo.",
+        "tags": ["Jogadores"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Jogador deletado com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Jogador não encontrado." },
+          "409": {
+            "description": "Conflito: Não foi possível deletar o jogador devido a uma restrição de integridade no banco de dados."
+          }
+        }
+      }
+    },
+    "/jogadores/{id}/details": {
+      "put": {
+        "summary": "Atualizar detalhes do jogador (Admin)",
+        "description": "Atualiza uma ou mais informações de um jogador existente, como nome, nível, posição, etc.",
+        "tags": ["Jogadores"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/JogadorUpdateInput" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Jogador atualizado com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Jogador não encontrado." }
+        }
+      }
+    },
+    "/jogadores/rodada/{rodada_id}": {
+      "get": {
+        "summary": "Listar jogadores por rodada",
+        "description": "Retorna todos os jogadores que foram confirmados para participar de uma rodada específica.",
+        "tags": ["Jogadores"],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogadores da rodada retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Jogador" } }
+              }
+            }
+          },
+          "404": { "description": "Rodada não encontrada." }
+        }
+      }
+    },
+    "/ligas": {
+      "post": {
+        "summary": "Criar nova liga (Admin)",
+        "description": "Cria uma nova liga ou temporada no sistema.",
+        "tags": ["Ligas"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nome", "data_inicio", "data_fim"],
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome da liga.",
+                    "example": "Liga de Verão 2025"
+                  },
+                  "data_inicio": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data de início da liga (YYYY-MM-DD).",
+                    "example": "2025-01-01"
+                  },
+                  "data_fim": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data de término da liga (YYYY-MM-DD).",
+                    "example": "2025-06-30"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Liga criada com sucesso." },
+          "400": { "description": "Dados inválidos na requisição." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado (não é admin)." }
+        }
+      },
+      "get": {
+        "summary": "Listar todas as ligas",
+        "description": "Retorna a lista completa de ligas cadastradas, incluindo as finalizadas.",
+        "tags": ["Ligas"],
+        "responses": {
+          "200": {
+            "description": "Lista de ligas retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Liga" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ligas/{id}": {
+      "get": {
+        "summary": "Buscar liga por ID",
+        "description": "Retorna os detalhes de uma liga específica.",
+        "tags": ["Ligas"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 },
+            "description": "ID da liga.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados da liga.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Liga" } } }
+          },
+          "404": { "description": "Liga não encontrada." }
+        }
+      },
+      "put": {
+        "summary": "Atualizar liga (Admin)",
+        "description": "Atualiza informações de uma liga existente.",
+        "tags": ["Ligas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "ID da liga."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string", "example": "Liga de Inverno 2025" },
+                  "data_inicio": { "type": "string", "format": "date", "example": "2025-07-01" },
+                  "data_fim": { "type": "string", "format": "date", "example": "2025-12-31" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Liga atualizada com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Liga não encontrada." }
+        }
+      },
+      "delete": {
+        "summary": "Deletar liga (Admin)",
+        "description": "Remove permanentemente uma liga do sistema. **Atenção:** Esta ação é destrutiva e usará o `ON DELETE CASCADE` do banco de dados para remover todas as rodadas, partidas e estatísticas associadas a esta liga.\n",
+        "tags": ["Ligas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "ID da liga a ser deletada."
+          }
+        ],
+        "responses": {
+          "200": { "description": "Liga deletada com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Liga não encontrada." }
+        }
+      }
+    },
+    "/ligas/{id}/finalizar": {
+      "post": {
+        "summary": "Finalizar liga antecipadamente (Admin)",
+        "description": "Marca a liga como finalizada na data e hora atuais. Uma liga finalizada não pode ter novas rodadas criadas. Esta ação é irreversível pelo sistema.\n",
+        "tags": ["Ligas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "ID da liga a ser finalizada."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liga finalizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Liga finalizada com sucesso!" },
+                    "finalizada_em": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-11-16T20:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "A liga já foi finalizada anteriormente." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Liga não encontrada." }
+        }
+      }
+    },
+    "/partidas/{partida_id}/resultados": {
+      "put": {
+        "summary": "Finaliza e salva os resultados completos de uma partida (Admin)",
+        "description": "Registra o resultado final de uma partida, incluindo placar, duração, jogadores envolvidos e uma lista detalhada de todos os eventos (gols, assistências, gols contra). Esta operação substitui quaisquer resultados anteriores para esta partida, recalculando todas as estatísticas com base nos novos dados fornecidos. É a fonte única da verdade para o que aconteceu no jogo.\n",
+        "tags": ["Partidas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "partida_id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "O ID único da partida que está sendo finalizada.",
+            "example": 42
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "placar1",
+                  "placar2",
+                  "duracao",
+                  "time1",
+                  "time2",
+                  "eventos",
+                  "time1_numero",
+                  "time2_numero"
+                ],
+                "properties": {
+                  "placar1": {
+                    "type": "integer",
+                    "description": "Número de gols marcados pelo Time 1.",
+                    "example": 5
+                  },
+                  "placar2": {
+                    "type": "integer",
+                    "description": "Número de gols marcados pelo Time 2.",
+                    "example": 3
+                  },
+                  "duracao": {
+                    "type": "integer",
+                    "description": "Duração total da partida em segundos.",
+                    "example": 900
+                  },
+                  "time1_numero": {
+                    "type": "integer",
+                    "description": "Identificador numérico do time 1 (ex: 1 ou 2, para diferenciar os times na rodada).",
+                    "example": 1
+                  },
+                  "time2_numero": {
+                    "type": "integer",
+                    "description": "Identificador numérico do time 2.",
+                    "example": 2
+                  },
+                  "goleiro_time1_id": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "ID do jogador que atuou como goleiro no time 1.",
+                    "example": 10
+                  },
+                  "goleiro_time2_id": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "ID do jogador que atuou como goleiro no time 2.",
+                    "example": 20
+                  },
+                  "time1": {
+                    "type": "array",
+                    "description": "Lista de jogadores que compuseram o Time 1.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer", "description": "ID do jogador.", "example": 10 },
+                        "joga_recuado": {
+                          "type": "integer",
+                          "description": "Flag (1 para sim, 0 para não) que indica se o jogador atuou em posição defensiva, elegível para bônus de 'clean sheet'.",
+                          "example": 1
+                        }
+                      }
+                    }
+                  },
+                  "time2": {
+                    "type": "array",
+                    "description": "Lista de jogadores que compuseram o Time 2.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer", "description": "ID do jogador.", "example": 21 },
+                        "joga_recuado": {
+                          "type": "integer",
+                          "description": "Flag (1 para sim, 0 para não) que indica se o jogador atuou em posição defensiva.",
+                          "example": 0
+                        }
+                      }
+                    }
+                  },
+                  "eventos": {
+                    "type": "array",
+                    "description": "Uma lista cronológica de todos os eventos que ocorreram na partida.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "tipo": {
+                          "type": "string",
+                          "enum": ["gol", "gol_contra"],
+                          "description": "O tipo de evento.",
+                          "example": "gol"
+                        },
+                        "jogador_id": {
+                          "type": "integer",
+                          "description": "ID do jogador que executou o evento (quem fez o gol ou o gol contra).",
+                          "example": 12
+                        },
+                        "assist_por_jogador_id": {
+                          "type": "integer",
+                          "nullable": true,
+                          "description": "ID do jogador que deu a assistência (apenas para eventos do tipo 'gol').",
+                          "example": 15
+                        },
+                        "tempo_segundos": {
+                          "type": "integer",
+                          "description": "O momento do jogo em que o evento ocorreu, em segundos.",
+                          "example": 450
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultados da partida salvos com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Resultados da partida salvos com sucesso (com Eventos)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação. Dados essenciais como times ou eventos estão faltando no corpo da requisição."
+          },
+          "401": {
+            "description": "Não autorizado. O token de autenticação está ausente ou é inválido."
+          },
+          "403": { "description": "Proibido. O usuário não tem permissão de administrador." },
+          "500": {
+            "description": "Erro interno do servidor durante o processamento dos resultados."
+          }
+        }
+      }
+    },
+    "/rodadas/liga/{liga_id}": {
+      "get": {
+        "summary": "Listar rodadas de uma liga",
+        "description": "Retorna todas as rodadas (passadas e futuras) de uma liga específica, ordenadas por data.",
+        "tags": ["Rodadas"],
+        "parameters": [
+          { "in": "path", "name": "liga_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de rodadas retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Rodada" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar nova rodada (Admin)",
+        "description": "Cria uma nova rodada dentro de uma liga, desde que a liga não esteja finalizada e a data seja válida.",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "liga_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RodadaInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Rodada criada com sucesso." },
+          "400": {
+            "description": "Dados inválidos, ou a liga já está finalizada, ou a data da rodada é posterior ao fim da liga."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Liga não encontrada." },
+          "409": { "description": "Conflito: Já existe uma rodada nesta data para esta liga." }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}": {
+      "put": {
+        "summary": "Atualizar data da rodada (Admin)",
+        "description": "Atualiza a data de uma rodada, desde que ela não esteja finalizada.",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RodadaUpdateInput" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Rodada atualizada com sucesso." },
+          "400": {
+            "description": "Dados inválidos ou tentativa de alterar uma rodada já finalizada."
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Rodada não encontrada." },
+          "409": { "description": "Conflito: Já existe outra rodada nesta data para a mesma liga." }
+        }
+      },
+      "delete": {
+        "summary": "Deletar rodada (Admin)",
+        "description": "Remove permanentemente uma rodada e todos os seus dados associados (jogadores presentes, times, partidas, resultados) via ON DELETE CASCADE.",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Rodada deletada com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Rodada não encontrada." }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}/jogadores": {
+      "get": {
+        "summary": "Listar jogadores de uma rodada",
+        "description": "Retorna a lista de todos os jogadores que foram confirmados para participar da rodada.",
+        "tags": ["Rodadas"],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogadores retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Jogador" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}/sync-jogadores": {
+      "post": {
+        "summary": "Sincronizar jogadores da rodada (Admin)",
+        "description": "Recebe uma lista de nomes de jogadores. Para cada nome, verifica se o jogador já existe no sistema. Se não existir, um novo jogador é criado. Todos os jogadores (novos e existentes) são então associados à rodada, substituindo a lista anterior.",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RodadaSyncJogadoresInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Jogadores sincronizados com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}/times": {
+      "get": {
+        "summary": "Listar times de uma rodada",
+        "description": "Retorna os times que foram sorteados e salvos para a rodada, com seus respectivos jogadores.",
+        "tags": ["Rodadas"],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Lista de times da rodada." } }
+      },
+      "post": {
+        "summary": "Salvar times da rodada (Admin)",
+        "description": "Define e salva a composição dos times para a rodada. Esta ação substitui qualquer sorteio de times salvo anteriormente para esta rodada.",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RodadaSaveTimesInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Times salvos com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Rodada não encontrada." }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}/partidas": {
+      "post": {
+        "summary": "Criar partida na rodada (Admin)",
+        "description": "Cria uma nova partida vazia dentro da rodada, pronta para ter seu resultado preenchido.",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "201": {
+            "description": "Partida criada com sucesso.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PartidaLiga" } }
+            }
+          },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Rodada não encontrada." }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}/finalizar": {
+      "post": {
+        "summary": "Finalizar rodada (Admin)",
+        "description": "Muda o status da rodada para 'finalizada'. Calcula os resultados finais de todos os jogadores com base nas partidas, e determina os prêmios da rodada (MVP, Pé de Rato, Artilheiro, etc.).",
+        "tags": ["Rodadas"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Rodada finalizada com sucesso." },
+          "400": { "description": "A rodada já foi finalizada anteriormente." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Rodada não encontrada." }
+        }
+      }
+    },
+    "/rodadas/{rodada_id}/resultados": {
+      "get": {
+        "summary": "Obter resultados completos da rodada",
+        "description": "Retorna uma tabela de classificação completa para a rodada, com as estatísticas e a pontuação total de cada jogador, ordenado por pontos.",
+        "tags": ["Rodadas"],
+        "parameters": [
+          { "in": "path", "name": "rodada_id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "Resultados da rodada retornados com sucesso." } }
+      }
+    },
+    "/estatisticas": {
+      "get": {
+        "summary": "Ranking geral de jogadores por pontos",
+        "description": "Retorna o ranking geral de jogadores com base em um sistema de pontos consolidado. Pode ser filtrado por uma liga específica.",
+        "tags": ["Estatísticas"],
+        "parameters": [{ "$ref": "#/components/parameters/LigaIdQuery" }],
+        "responses": {
+          "200": {
+            "description": "Ranking geral de jogadores retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/StatsGeraisJogador" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/estatisticas/dashboard": {
+      "get": {
+        "summary": "Resumo de estatísticas para o Dashboard",
+        "description": "Retorna um resumo com os principais destaques, como total de jogadores, total de gols e os líderes de cada categoria (artilheiro, assistências, MVPs). Pode ser filtrado por uma liga específica.",
+        "tags": ["Estatísticas"],
+        "parameters": [{ "$ref": "#/components/parameters/LigaIdQuery" }],
+        "responses": { "200": { "description": "Dados do dashboard retornados com sucesso." } }
+      }
+    },
+    "/estatisticas/artilharia": {
+      "get": {
+        "summary": "Ranking de artilharia",
+        "description": "Retorna o ranking dos maiores artilheiros, ordenado pelo total de gols. Pode ser filtrado por uma liga específica.",
+        "tags": ["Estatísticas"],
+        "parameters": [{ "$ref": "#/components/parameters/LigaIdQuery" }],
+        "responses": {
+          "200": {
+            "description": "Ranking de artilheiros retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RankingArtilharia" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/estatisticas/assistencias": {
+      "get": {
+        "summary": "Ranking de assistências",
+        "description": "Retorna o ranking dos jogadores com mais assistências, ordenado pelo total de assistências. Pode ser filtrado por uma liga específica.",
+        "tags": ["Estatísticas"],
+        "parameters": [{ "$ref": "#/components/parameters/LigaIdQuery" }],
+        "responses": {
+          "200": {
+            "description": "Ranking de assistências retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RankingAssistencias" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/estatisticas/premios": {
+      "get": {
+        "summary": "Ranking de prêmios e conquistas",
+        "description": "Retorna um ranking de jogadores com base na quantidade de prêmios de rodada conquistados (MVP, Artilheiro da Rodada, etc.). Pode ser filtrado por uma liga específica.",
+        "tags": ["Estatísticas"],
+        "parameters": [{ "$ref": "#/components/parameters/LigaIdQuery" }],
+        "responses": {
+          "200": {
+            "description": "Ranking de prêmios retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RankingPremios" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/times": {
+      "get": {
+        "summary": "Listar todos os times fixos",
+        "description": "Retorna a lista completa de times fixos cadastrados no sistema.",
+        "tags": ["Times"],
+        "responses": {
+          "200": {
+            "description": "Lista de times retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/TimeFixo" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar novo time fixo (Admin)",
+        "description": "Cadastra um novo time fixo no sistema, que pode ser usado em campeonatos.",
+        "tags": ["Times"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TimeFixoInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Time criado com sucesso." },
+          "400": { "description": "Dados inválidos (ex: nome faltando)." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "409": { "description": "Conflito: Um time com este nome já existe." }
+        }
+      }
+    },
+    "/times/{id}": {
+      "get": {
+        "summary": "Buscar time por ID",
+        "description": "Retorna os detalhes de um time fixo específico.",
+        "tags": ["Times"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do time retornados com sucesso.",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TimeFixo" } }
+            }
+          },
+          "404": { "description": "Time não encontrado." }
+        }
+      },
+      "put": {
+        "summary": "Atualizar time (Admin)",
+        "description": "Atualiza o nome e/ou a URL do logo de um time existente.",
+        "tags": ["Times"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TimeFixoUpdateInput" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Time atualizado com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Time não encontrado." },
+          "409": { "description": "Conflito: Já existe outro time com o nome fornecido." }
+        }
+      }
+    },
+    "/times/{id}/jogadores": {
+      "get": {
+        "summary": "Listar jogadores de um time",
+        "description": "Retorna la lista de todos os jogadores que pertencem ao elenco de um time fixo.",
+        "tags": ["Times"],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogadores do time retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Jogador" } }
+              }
+            }
+          },
+          "404": { "description": "Time não encontrado." }
+        }
+      },
+      "post": {
+        "summary": "Adicionar jogadores a um time (Admin)",
+        "description": "Vincula um ou mais jogadores a um time. Se um jogador já estiver no time, ele é ignorado.",
+        "tags": ["Times"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TimeAddJogadoresInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Jogadores adicionados com sucesso." },
+          "400": { "description": "Dados inválidos (ex: lista de IDs vazia)." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "Time não encontrado." }
+        }
+      }
+    },
+    "/times/{id}/jogadores/{jogador_id}": {
+      "delete": {
+        "summary": "Remover jogador de um time (Admin)",
+        "description": "Remove a associação de um jogador específico de um time.",
+        "tags": ["Times"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "ID do time."
+          },
+          {
+            "in": "path",
+            "name": "jogador_id",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "ID do jogador a ser removido."
+          }
+        ],
+        "responses": {
+          "200": { "description": "Jogador removido do time com sucesso." },
+          "401": { "description": "Não autenticado." },
+          "403": { "description": "Acesso negado." },
+          "404": { "description": "A associação entre time e jogador não foi encontrada." }
+        }
+      }
+    },
+    "/upload/foto": {
+      "post": {
+        "summary": "Upload de foto de jogador (Admin)",
+        "description": "Faz o upload de uma imagem de jogador para um bucket S3. A rota valida o tipo de arquivo (JPG, PNG, WEBP) e o tamanho (máximo de 5MB). Se o upload for bem-sucedido, a API retorna a URL pública e permanente da imagem, que pode ser usada para associar a um jogador. Requer permissão de administrador.\n",
+        "tags": ["Upload"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["foto"],
+                "properties": {
+                  "foto": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Arquivo de imagem a ser enviado. Tipos permitidos: JPG, PNG, WEBP. Tamanho máximo: 5MB."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload realizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Upload realizado com sucesso!" },
+                    "url": {
+                      "type": "string",
+                      "format": "url",
+                      "description": "URL pública da imagem no S3.",
+                      "example": "https://seubucket.s3.sua-regiao.amazonaws.com/jogadores/arquivo-unico.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida: nenhum arquivo foi enviado ou o tipo de arquivo não é suportado."
+          },
+          "401": {
+            "description": "Não autenticado: o token de acesso está ausente ou é inválido."
+          },
+          "403": { "description": "Acesso negado: o usuário não tem permissão de administrador." },
+          "413": {
+            "description": "Arquivo muito grande: o tamanho do arquivo excede o limite de 5MB."
+          },
+          "500": { "description": "Erro interno do servidor ao processar o upload." }
+        }
+      }
+    }
+  },
+  "tags": []
+}

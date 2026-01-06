@@ -1,0 +1,27 @@
+/campeonatos/{campeonato_id}/partidas:
+  post:
+    summary: Criar próxima partida (Admin)
+    tags:
+    - Campeonatos
+    parameters:
+    - name: campeonato_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timeA_id:
+                type: integer
+              timeB_id:
+                type: integer
+    responses:
+      '201':
+        description: Partida criada
+    security:
+    - bearerAuth: []

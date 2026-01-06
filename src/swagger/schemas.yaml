@@ -1,0 +1,112 @@
+Error:
+  type: object
+  properties:
+    message:
+      type: string
+AuthResponse:
+  type: object
+  properties:
+    message:
+      type: string
+    token:
+      type: string
+    user:
+      type: object
+Jogador:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    nome:
+      type: string
+      example: Higor
+    posicao:
+      type: string
+      example: linha
+    nivel:
+      type: integer
+      example: 1
+    joga_recuado:
+      type: boolean
+      example: false
+    foto_url:
+      type: string
+      example: https://.../foto.jpg
+    avatar_url:
+      type: string
+      example: https://.../avatar.jpg
+Time:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    nome:
+      type: string
+      example: Time Azul
+    logo_url:
+      type: string
+      example: https://.../logo.png
+Rodada:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    liga_id:
+      type: integer
+      example: 1
+    campeonato_id:
+      type: integer
+      example: null
+    data:
+      type: string
+      format: date
+      example: '2025-12-01'
+    status:
+      type: string
+      example: aberta
+Partida:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 10
+    rodada_id:
+      type: integer
+      example: 2
+    timeA_id:
+      type: integer
+      example: 1
+    timeB_id:
+      type: integer
+      example: 2
+    placar_timeA:
+      type: integer
+      example: 2
+    placar_timeB:
+      type: integer
+      example: 1
+    duracao_segundos:
+      type: integer
+      example: 480
+Campeonato:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    nome:
+      type: string
+      example: Copa Futlendas
+    data:
+      type: string
+      format: date
+      example: '2025-11-01'
+    formato:
+      type: string
+      example: fase_de_pontos
+    fase_atual:
+      type: string
+      example: inscricao

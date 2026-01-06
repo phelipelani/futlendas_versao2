@@ -1,0 +1,14 @@
+/campeonatos/{campeonato_id}/classificacao:
+  get:
+    summary: Obter classificação do campeonato
+    tags:
+    - Campeonatos
+    parameters:
+    - name: campeonato_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Classificação do campeonato

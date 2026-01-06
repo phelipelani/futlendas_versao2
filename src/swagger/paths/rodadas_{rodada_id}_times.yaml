@@ -1,0 +1,27 @@
+/rodadas/{rodada_id}/times:
+  post:
+    summary: Salvar times sorteados (Admin)
+    tags:
+    - Rodadas
+    parameters:
+    - name: rodada_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              times:
+                type: array
+                items:
+                  type: object
+    responses:
+      '200':
+        description: Times salvos
+    security:
+    - bearerAuth: []

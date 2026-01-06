@@ -1,0 +1,35 @@
+/jogadores/{id}/details:
+  put:
+    summary: Atualizar dados do jogador (Admin)
+    tags:
+    - Jogadores
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              nome:
+                type: string
+              nivel:
+                type: integer
+              posicao:
+                type: string
+              joga_recuado:
+                type: boolean
+              foto_url:
+                type: string
+              avatar_url:
+                type: string
+    responses:
+      '200':
+        description: Atualizado
+    security:
+    - bearerAuth: []

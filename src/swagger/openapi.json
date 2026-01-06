@@ -1,0 +1,1111 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Futlendas API (generated)",
+    "version": "1.0.0",
+    "description": "Auto-generated OpenAPI 3.0 specification (skeleton) based on project routes and controllers. Review and refine examples and responses."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local dev"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Autenticação e convites"
+    },
+    {
+      "name": "Jogadores",
+      "description": "CRUD e informações dos jogadores"
+    },
+    {
+      "name": "Times",
+      "description": "Times fixos e seus jogadores"
+    },
+    {
+      "name": "Rodadas",
+      "description": "Rodadas e sorteios"
+    },
+    {
+      "name": "Partidas",
+      "description": "Partidas (liga e campeonato)"
+    },
+    {
+      "name": "Campeonatos",
+      "description": "Campeonatos e partidas de campeonato"
+    },
+    {
+      "name": "Estatísticas",
+      "description": "Stats e rankings"
+    },
+    {
+      "name": "Uploads",
+      "description": "Upload de avatares e arquivos"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Realizar login",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Registrar novo usuário (Admin)",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado"
+          },
+          "400": {
+            "description": "Erro de validação",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/jogadores": {
+      "get": {
+        "summary": "Listar todos os jogadores",
+        "tags": [
+          "Jogadores"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogadores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Jogador"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar novo jogador (Admin)",
+        "tags": [
+          "Jogadores"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Jogador"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Jogador criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Jogador"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/jogadores/{id}": {
+      "get": {
+        "summary": "Buscar jogador por ID",
+        "tags": [
+          "Jogadores"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Jogador",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Jogador"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jogadores/{id}/details": {
+      "put": {
+        "summary": "Atualizar dados do jogador (Admin)",
+        "tags": [
+          "Jogadores"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string"
+                  },
+                  "nivel": {
+                    "type": "integer"
+                  },
+                  "posicao": {
+                    "type": "string"
+                  },
+                  "joga_recuado": {
+                    "type": "boolean"
+                  },
+                  "foto_url": {
+                    "type": "string"
+                  },
+                  "avatar_url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Atualizado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/jogadores/rodada/{rodada_id}": {
+      "get": {
+        "summary": "Listar jogadores confirmados em uma rodada",
+        "tags": [
+          "Jogadores"
+        ],
+        "parameters": [
+          {
+            "name": "rodada_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Jogador"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/times": {
+      "get": {
+        "summary": "Listar times",
+        "tags": [
+          "Times"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de times",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Time"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar time (Admin)",
+        "tags": [
+          "Times"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Time"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Criado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/times/{id}": {
+      "get": {
+        "summary": "Buscar time por ID",
+        "tags": [
+          "Times"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Time",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/times/{id}/jogadores": {
+      "get": {
+        "summary": "Listar jogadores do time",
+        "tags": [
+          "Times"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogadores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Jogador"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Adicionar jogadores ao time (Admin)",
+        "tags": [
+          "Times"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jogador_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Jogadores adicionados"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rodadas/liga/{liga_id}": {
+      "get": {
+        "summary": "Listar rodadas de uma liga",
+        "tags": [
+          "Rodadas"
+        ],
+        "parameters": [
+          {
+            "name": "liga_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de rodadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Rodada"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar nova rodada (Admin)",
+        "tags": [
+          "Rodadas"
+        ],
+        "parameters": [
+          {
+            "name": "liga_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Rodada criada"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rodadas/{rodada_id}/partidas": {
+      "post": {
+        "summary": "Criar partida na rodada (Admin)",
+        "tags": [
+          "Rodadas"
+        ],
+        "parameters": [
+          {
+            "name": "rodada_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Partida criada"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rodadas/{rodada_id}/finalizar": {
+      "post": {
+        "summary": "Finalizar rodada (Admin)",
+        "tags": [
+          "Rodadas"
+        ],
+        "parameters": [
+          {
+            "name": "rodada_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rodada finalizada"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rodadas/{rodada_id}/times": {
+      "post": {
+        "summary": "Salvar times sorteados (Admin)",
+        "tags": [
+          "Rodadas"
+        ],
+        "parameters": [
+          {
+            "name": "rodada_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "times": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Times salvos"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/partidas/globais": {
+      "get": {
+        "summary": "Listar partidas globais",
+        "tags": [
+          "Partidas"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de partidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Partida"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partidas/{id}/detalhes": {
+      "get": {
+        "summary": "Buscar detalhes da partida",
+        "tags": [
+          "Partidas"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes da partida"
+          }
+        }
+      }
+    },
+    "/partidas/{partida_id}/resultados": {
+      "put": {
+        "summary": "Finalizar partida e salvar resultados (Admin)",
+        "tags": [
+          "Partidas"
+        ],
+        "parameters": [
+          {
+            "name": "partida_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultados salvos"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/campeonatos": {
+      "get": {
+        "summary": "Listar campeonatos",
+        "tags": [
+          "Campeonatos"
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de campeonatos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Campeonato"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar campeonato (Admin)",
+        "tags": [
+          "Campeonatos"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Campeonato"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campeonato criado"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/campeonatos/{campeonato_id}/partidas": {
+      "post": {
+        "summary": "Criar próxima partida (Admin)",
+        "tags": [
+          "Campeonatos"
+        ],
+        "parameters": [
+          {
+            "name": "campeonato_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "timeA_id": {
+                    "type": "integer"
+                  },
+                  "timeB_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Partida criada"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/campeonatos/{campeonato_id}/classificacao": {
+      "get": {
+        "summary": "Obter classificação do campeonato",
+        "tags": [
+          "Campeonatos"
+        ],
+        "parameters": [
+          {
+            "name": "campeonato_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Classificação do campeonato"
+          }
+        }
+      }
+    },
+    "/estatisticas": {
+      "get": {
+        "summary": "Ranking geral de jogadores",
+        "tags": [
+          "Estatísticas"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranking"
+          }
+        }
+      }
+    },
+    "/estatisticas/dashboard": {
+      "get": {
+        "summary": "Estatísticas para dashboard",
+        "tags": [
+          "Estatísticas"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard stats"
+          }
+        }
+      }
+    },
+    "/estatisticas/artilharia": {
+      "get": {
+        "summary": "Artilharia geral",
+        "tags": [
+          "Estatísticas"
+        ],
+        "responses": {
+          "200": {
+            "description": "Artilharia"
+          }
+        }
+      }
+    },
+    "/upload/avatar": {
+      "post": {
+        "summary": "Upload avatar",
+        "tags": [
+          "Uploads"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Arquivo enviado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object"
+          }
+        }
+      },
+      "Jogador": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nome": {
+            "type": "string",
+            "example": "Higor"
+          },
+          "posicao": {
+            "type": "string",
+            "example": "linha"
+          },
+          "nivel": {
+            "type": "integer",
+            "example": 1
+          },
+          "joga_recuado": {
+            "type": "boolean",
+            "example": false
+          },
+          "foto_url": {
+            "type": "string",
+            "example": "https://.../foto.jpg"
+          },
+          "avatar_url": {
+            "type": "string",
+            "example": "https://.../avatar.jpg"
+          }
+        }
+      },
+      "Time": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nome": {
+            "type": "string",
+            "example": "Time Azul"
+          },
+          "logo_url": {
+            "type": "string",
+            "example": "https://.../logo.png"
+          }
+        }
+      },
+      "Rodada": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "liga_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "campeonato_id": {
+            "type": "integer",
+            "example": null
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-12-01"
+          },
+          "status": {
+            "type": "string",
+            "example": "aberta"
+          }
+        }
+      },
+      "Partida": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 10
+          },
+          "rodada_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "timeA_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "timeB_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "placar_timeA": {
+            "type": "integer",
+            "example": 2
+          },
+          "placar_timeB": {
+            "type": "integer",
+            "example": 1
+          },
+          "duracao_segundos": {
+            "type": "integer",
+            "example": 480
+          }
+        }
+      },
+      "Campeonato": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "nome": {
+            "type": "string",
+            "example": "Copa Futlendas"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-11-01"
+          },
+          "formato": {
+            "type": "string",
+            "example": "fase_de_pontos"
+          },
+          "fase_atual": {
+            "type": "string",
+            "example": "inscricao"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

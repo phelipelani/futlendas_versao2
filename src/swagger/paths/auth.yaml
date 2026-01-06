@@ -1,0 +1,118 @@
+# Arquivo: src/swagger/paths/auth.yaml
+tags:
+  - name: Autenticação
+    description: Rotas para login e registro de usuários
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Autenticação
+      summary: Realiza o login de um usuário
+      description: Retorna um token JWT se as credenciais estiverem corretas.
+      security: [] # Rota pública
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/AuthLoginInput'
+      responses:
+        '200':
+          description: Login bem-sucedido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login bem-sucedido!"
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  user:
+                    $ref: '../schemas.yaml#/components/schemas/Usuario'
+        '400':
+          description: 'Erro de validação (campos faltando)' # <-- Aspas adicionadas
+          content:q
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+
+  /auth/register:
+    post:
+      tags:
+        - Autenticação
+      summary: Registra um novo usuário (Requer Admin)
+      description: Rota protegida para um admin registrar novos usuários ou admins.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/AuthRegisterInput'
+      responses:
+        '201':
+          description: Usuário registrado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Usuário registrado com sucesso!"
+                  userId:
+                    type: integer
+                    example: 2
+                  username:
+                    type: string
+                    example: "new_user"
+                  role:
+                    type: string
+                    example: "user"
+        '400':
+          description: 'Erro de validação (senha curta, etc.)' # <-- Aspas adicionadas
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: 'Não autorizado (token inválido)' # <-- Aspas adicionadas
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '403':
+          description: 'Acesso negado (usuário não é admin)' # <-- Aspas adicionadas
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '409':
+          description: 'Conflito (username já existe)' # <-- Aspas adicionadas
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'

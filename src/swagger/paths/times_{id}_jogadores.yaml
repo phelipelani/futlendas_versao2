@@ -1,0 +1,46 @@
+/times/{id}/jogadores:
+  get:
+    summary: Listar jogadores do time
+    tags:
+    - Times
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    responses:
+      '200':
+        description: Lista de jogadores
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Jogador'
+  post:
+    summary: Adicionar jogadores ao time (Admin)
+    tags:
+    - Times
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jogador_ids:
+                type: array
+                items:
+                  type: integer
+    responses:
+      '200':
+        description: Jogadores adicionados
+    security:
+    - bearerAuth: []

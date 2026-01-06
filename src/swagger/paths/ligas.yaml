@@ -1,0 +1,236 @@
+# Arquivo: src/swagger/paths/ligas.yaml
+tags:
+  - name: Ligas
+    description: Gerenciamento das ligas
+
+paths:
+  /ligas:
+    get:
+      tags:
+        - Ligas
+      summary: Retorna todas as ligas
+      security: [] # Pública
+      responses:
+        '200':
+          description: OK - Lista de ligas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas.yaml#/components/schemas/Liga' # Referencia o schema no outro arquivo
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Ligas
+      summary: Cria uma nova liga
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/LigaInput'
+      responses:
+        '201':
+          description: Liga criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Liga criada com sucesso!"
+                  liga:
+                    $ref: '../schemas.yaml#/components/schemas/Liga'
+        '400':
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '403':
+          description: Acesso negado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflito (nome duplicado)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+
+  /ligas/{id}:
+    get:
+      tags:
+        - Ligas
+      summary: Retorna uma liga pelo ID
+      security: [] # Pública
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da liga
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Detalhes da liga
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/Liga'
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Liga não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Ligas
+      summary: Atualiza uma liga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da liga
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/components/schemas/LigaUpdateInput'
+      responses:
+        '200':
+          description: Liga atualizada
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '400':
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '403':
+          description: Acesso negado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Liga não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflito (nome duplicado)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Ligas
+      summary: Deleta uma liga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da liga
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Liga deletada
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/SuccessMessage'
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '403':
+          description: Acesso negado
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Liga não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas.yaml#/components/schemas/ErrorResponse'
