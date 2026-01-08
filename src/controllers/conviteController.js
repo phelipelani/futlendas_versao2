@@ -277,10 +277,11 @@
 // }
 
 // Arquivo: src/controllers/conviteController.js
+// Arquivo: src/controllers/conviteController.js
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import pool from '../database/db.js'; // Mudança: Importando o pool do MySQL
+import pool from '../database/db.js';
 import { validationResult } from 'express-validator';
 import { HttpError } from '../utils/errors.js';
 
@@ -294,6 +295,15 @@ function checkValidation(req) {
     err.errors = errors.array();
     throw err;
   }
+}
+
+/**
+ * Helper para pegar a URL base do Frontend corretamente
+ * Remove barra no final se houver, para evitar links como .com.br//ativar
+ */
+function getFrontendUrl() {
+  const url = process.env.FRONTEND_URL || 'http://localhost:5173';
+  return url.replace(/\/$/, ''); // Remove a última barra se existir
 }
 
 /**
@@ -321,7 +331,7 @@ export async function gerarConvite(req, res, next) {
       throw new HttpError('Este jogador já possui uma conta ativa.', 400);
     }
 
-    // Verifica convite existente (MySQL syntax: NOW() ao invés de datetime('now'))
+    // Verifica convite existente
     const [convitesExistentes] = await pool.query(
       `SELECT * FROM convites 
        WHERE jogador_id = ? 
@@ -330,6 +340,8 @@ export async function gerarConvite(req, res, next) {
       [jogador_id]
     );
     const conviteExistente = convitesExistentes[0];
+
+    const baseUrl = getFrontendUrl();
 
     if (conviteExistente) {
       // Se o convite já existe, ATUALIZA o role dele se for diferente
@@ -342,7 +354,7 @@ export async function gerarConvite(req, res, next) {
         message: 'Convite já existe e ainda é válido.',
         convite: {
           token: conviteExistente.token,
-          link: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/ativar-conta/${conviteExistente.token}`,
+          link: `${baseUrl}/ativar-conta/${conviteExistente.token}`,
           expira_em: conviteExistente.expira_em,
           role: conviteExistente.role,
           jogador: {
@@ -365,12 +377,12 @@ export async function gerarConvite(req, res, next) {
       [jogador_id, token, role, expiraEm, adminId]
     );
 
-    const link = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/ativar-conta/${token}`;
+    const link = `${baseUrl}/ativar-conta/${token}`;
 
     res.status(201).json({
       message: 'Convite gerado com sucesso!',
       convite: {
-        id: result.insertId, // MySQL usa insertId
+        id: result.insertId,
         token: token,
         link: link,
         expira_em: expiraEm.toISOString(),
@@ -439,7 +451,7 @@ export async function ativarConta(req, res, next) {
 
     const { token, username, password } = req.body;
 
-    // Pega conexão para usar transação (importante para consistência)
+    // Pega conexão para usar transação
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
@@ -483,7 +495,7 @@ export async function ativarConta(req, res, next) {
       [username, password_hash, userRole]
     );
 
-    const userId = userResult.insertId; // MySQL usa insertId
+    const userId = userResult.insertId;
 
     await connection.query('UPDATE jogadores SET usuario_id = ? WHERE id = ?', [userId, convite.jogador_id]);
     await connection.query(`UPDATE convites SET usado = 1, usado_em = NOW() WHERE id = ?`, [convite.id]);
@@ -547,7 +559,8 @@ export async function gerarConviteAdmin(req, res, next) {
       [token, expiraEm, adminId]
     );
 
-    const link = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/ativar-admin/${token}`;
+    const baseUrl = getFrontendUrl();
+    const link = `${baseUrl}/ativar-admin/${token}`;
 
     res.status(201).json({
       message: 'Convite de admin gerado com sucesso!',
